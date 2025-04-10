@@ -1483,6 +1483,61 @@ def update_order_status(request, pk, status):
     messages.success(request, f'Order status updated to {status}.')
     return redirect('admin_dashboard')
 
+
+
+def update_order_statuss(request, order_id, status):
+    order = get_object_or_404(Orders, id=order_id)
+    previous_status = order.status
+    
+    # Only proceed if status is actually changing
+    if previous_status == status:
+        messages.info(request, f'Order status is already {status}.')
+        return redirect('admin_dashboard')
+    
+    order.status = status
+    order.save()
+    
+    # Handle cancellation specifically
+    if status == 'cancelled':
+        try:
+            # Prepare email context
+            context = {
+                'order': order,
+                'user': order.user,
+                'site_name': 'Your Pharmacy Name',
+                'support_email': 'support@yourpharmacy.com',
+                'support_phone': '+1 (123) 456-7890'
+            }
+            
+            # Send email to customer
+            subject = f"Order #{order.order_number} Cancellation Notification"
+            message = render_to_string('order_cancel.txt', context)
+            html_message = render_to_string('order_cancel.html', context)
+            
+            recipient_email = order.user.email if order.user else order.email
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [recipient_email],
+                html_message=html_message,
+                fail_silently=False
+            )
+            
+            # If payment was made, initiate refund process
+            if order.razorpay_payment_id:
+                # Add your Razorpay refund logic here
+                messages.success(request, f'Order cancelled. Refund will be processed within 7 business days. Email sent to customer.')
+            else:
+                messages.success(request, 'Order cancelled successfully. Email sent to customer.')
+                
+        except Exception as e:
+            messages.error(request, f'Order status updated but email failed to send: {str(e)}')
+    else:
+        messages.success(request, f'Order status updated to {status}.')
+    
+    return redirect('admin_dashboard')
+
 #def book_appointment(request):
     user_id = request.session.get('user_id')
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))

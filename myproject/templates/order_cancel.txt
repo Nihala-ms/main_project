@@ -1,0 +1,17 @@
+Dear {% if user %}{{ user.get_full_name }}{% else %}Customer{% endif %},
+
+We regret to inform you that your order #{{ order.order_number }} has been canceled.
+
+{% if order.razorpay_payment_id %}
+Your refund will be processed within 7 business days. If you don't receive your refund within this period, please contact our customer support at support@yourdomain.com or call us at +91-XXXXXXXXXX.
+{% endif %}
+
+Order Details:
+- Order Number: {{ order.order_number }}
+- Order Date: {{ order.created_at|date:"F j, Y" }}
+- Total Amount: ₹{{ order.total }}
+
+Thank you for your understanding.
+
+Sincerely,
+The NovenaCare+ Team

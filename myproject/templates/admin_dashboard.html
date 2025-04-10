@@ -1168,7 +1168,10 @@
                                             <a class="dropdown-item" href="{% url 'update_order_status' order.id 'processing' %}">Processing</a>
                                             <a class="dropdown-item" href="{% url 'update_order_status' order.id 'shipped' %}">Shipped</a>
                                             <a class="dropdown-item" href="{% url 'update_order_status' order.id 'delivered' %}">Delivered</a>
-                                            <a class="dropdown-item" href="{% url 'update_order_status' order.id 'cancelled' %}">Cancel</a>
+                                            <a class="dropdown-item" href="{% url 'update_order_statuss' order.id 'cancelled' %}" 
+                                            onclick="return confirm('Are you sure you want to cancel this order? An email will be sent to the customer.');">
+                                             Cancel
+                                         </a>
                                         </div>
                                     </div>
                                 </div>

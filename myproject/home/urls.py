@@ -38,6 +38,6 @@ urlpatterns = [
     path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
     path('order/<int:pk>/', views.order_detail, name='order_detail'),
     path('update-order-status/<int:pk>/<str:status>/', views.update_order_status, name='update_order_status'),
-
+    path('orders/<int:order_id>/update-status/<str:status>/', views.update_order_statuss, name='update_order_statuss'),
 
 ]
