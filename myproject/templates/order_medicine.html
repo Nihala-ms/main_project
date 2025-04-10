@@ -1,0 +1,679 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Medicine - Netmeds</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #1d2b60;
+            --secondary-color: #32a3c6;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f8f8;
+            --dark-color: #333;
+            --gray-color: #e0e0e0;
+            --white-color: #ffffff;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--white-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo img {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+        }
+
+        .search-bar {
+            flex: 1;
+            margin: 0 20px;
+            display: flex;
+            max-width: 600px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--gray-color);
+            border-radius: 30px 0 0 30px;
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--secondary-color);
+        }
+
+        .search-bar button {
+            padding: 12px 25px;
+            border: none;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .search-bar button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-actions a {
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+
+        .user-actions a:hover {
+            color: var(--secondary-color);
+            background-color: rgba(29, 43, 96, 0.1);
+        }
+
+        .user-actions a i {
+            margin-right: 5px;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--primary-color);
+            padding: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        nav li {
+            margin: 0 10px;
+        }
+
+        nav a {
+            color: var(--white-color);
+            font-size: 16px;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Medicine Search Section */
+        .medicine-search {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            color: var(--white-color);
+            margin-bottom: 40px;
+        }
+
+        .medicine-search h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .medicine-search p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .medicine-search .search-bar {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background-color: var(--white-color);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 40px;
+        }
+
+        .welcome-section h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .welcome-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .welcome-card {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--light-color);
+            transition: var(--transition);
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-card i {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .welcome-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .welcome-card p {
+            color: var(--dark-color);
+            line-height: 1.7;
+        }
+
+        /* Product Listings */
+        .product-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+
+        .section-title a {
+            color: var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title a i {
+            margin-left: 5px;
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--white-color);
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .product-image img {
+            width: auto;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-info h3 {
+            margin: 0 0 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .product-info .brand {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .product-info .price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .add-to-cart {
+            display: inline-block;
+            margin-top: auto;
+            padding: 12px 20px;
+            background: var(--primary-color);
+            color: var(--white-color);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition);
+            border: none;
+            width: 100%;
+        }
+
+        .add-to-cart:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .no-products {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--white-color);
+            padding: 50px 20px 20px;
+            border-top: 1px solid var(--gray-color);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            color: var(--dark-color);
+            transition: var(--transition);
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        .footer-column a:hover {
+            color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-color);
+            margin-top: 30px;
+        }
+
+        .copyright {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .social-media {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-media a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .social-media a:hover {
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+            transform: translateY(-5px);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-bar {
+                width: 100%;
+                margin: 15px 0;
+            }
+
+            .user-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .welcome-content {
+                grid-template-columns: 1fr;
+            }
+
+            .product-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="top-bar">
+            <div class="logo">
+                <a href="#"><img src="{% static 'images/logo.png' %}" alt="Netmeds Logo"></a>
+            </div>
+            <form action="{% url 'search_medicine' %}" method="get" class="search-bar">
+                <input type="text" name="q" placeholder="Search for medicines..." value="{{ query }}">
+                <button type="submit">Search</button>
+            </form>
+            <div class="user-actions">
+                <a href="#"><i class="fas fa-user"></i> Sign In / Sign Up</a>
+                <a href="#"><i class="fas fa-shopping-cart"></i> Cart</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#">Medicine</a></li>
+            <li><a href="#">Wellness</a></li>
+            <li><a href="#">Lab Tests</a></li>
+            <li><a href="#">Beauty</a></li>
+            <li><a href="#">Health Corner</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Medicine Search Section -->
+        <section class="medicine-search">
+            <h1>Order Medicine Online</h1>
+            <p>Find and order your prescribed medicines with ease</p>
+            <form action="{% url 'search_medicine' %}" method="get" class="search-bar">
+                <input type="text" name="q" placeholder="Search for medicines..." value="{{ query }}">
+                <button type="submit"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </section>
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <h2>Welcome to Novena Pharmacy</h2>
+            <div class="welcome-content">
+                <div class="welcome-card">
+                    <i class="fas fa-medkit"></i>
+                    <h3>Easy Medicine Ordering</h3>
+                    <p>Browse our extensive collection of medicines and healthcare products. Find exactly what you need with our powerful search and filtering options.</p>
+                </div>
+                <div class="welcome-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>Fast Delivery</h3>
+                    <p>Get your medicines delivered quickly and safely to your doorstep. We offer reliable delivery services to ensure you never run out of essential medications.</p>
+                </div>
+                <div class="welcome-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Trusted Quality</h3>
+                    <p>All our products are sourced from verified manufacturers and pharmacies. We guarantee the authenticity and quality of every medicine we deliver.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Listings -->
+        <section class="product-section">
+            <div class="section-title">
+                <h2>Popular Medicines</h2>
+                <a href="#">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="product-container">
+                {% for medicine in medicines %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}">
+                        </div>
+                        <div class="product-info">
+                            <h3>{{ medicine.name }}</h3>
+                            <p class="brand">{{ medicine.brand.name }} ({{ medicine.dosage }})</p>
+                            <p class="price">₹{{ medicine.price }}</p>
+                            <a href="{% url 'detailed' medicine.id %}" class="add-to-cart">Add to Cart</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="no-products">
+                        <p>No medicines available at the moment. Please check back later.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Medicine Delivery</a></li>
+                        <li><a href="#">Lab Tests</a></li>
+                        <li><a href="#">Doctor Consultations</a></li>
+                        <li><a href="#">Health Packages</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-phone"></i> +1 234 567 890</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@netmeds.com</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> 123 Health St, Medical City</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">© 2023 Netmeds. All Rights Reserved.</p>
+                <div class="social-media">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

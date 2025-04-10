@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73ff;
+            --secondary-color: #1e1e2f;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --info-color: #36b9cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: #f8f9fc;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--secondary-color) 0%, #2b2b3f 100%);
+            padding: 20px 0;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0 15px;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 8px 0;
+            position: relative;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a.active {
+            background: linear-gradient(90deg, var(--primary-color) 0%, rgba(78, 115, 255, 0.5) 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(78, 115, 255, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-header h1 {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .profile-header h1 span {
+            color: var(--primary-color);
+        }
+
+        .profile-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-image-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(78, 115, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+
+        .profile-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid rgba(78, 115, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-placeholder i {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+
+        .profile-specialization {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e3eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(78, 115, 255, 0.2);
+            background-color: #fff;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            background-color: #f8f9fc;
+            border: 1px dashed #c2c7d0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 255, 0.05);
+        }
+
+        .file-input-label i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(78, 115, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5df1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 115, 255, 0.4);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+            
+            .sidebar-header h2, 
+            .sidebar ul li a span {
+                display: none;
+            }
+            
+            .sidebar ul li a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .sidebar ul li a i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                padding: 10px;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar ul {
+                display: flex;
+                justify-content: space-around;
+                width: 100%;
+            }
+            
+            .sidebar ul li {
+                margin: 0;
+            }
+            
+            .sidebar ul li a {
+                padding: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .profile-stats {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .profile-info {
+                margin-bottom: 20px;
+            }
+            
+            .profile-image, .profile-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .profile-name {
+                font-size: 1.3rem;
+            }
+            
+            .profile-specialization {
+                font-size: 1rem;
+            }
+        }
+
+        /* Animation for form elements */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Doctor Dashboard</h2>
+        </div>
+        <ul>
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="#"><i class="fas fa-calendar-check"></i><span>Appointments</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-user-cog"></i><span>Profile</span></a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1>My <span>Profile</span></h1>
+            </div>
+            
+            <div class="profile-card">
+                <div class="profile-info">
+                    {% if doctor_additional_info.profile_image %}
+                        <div class="profile-image-container">
+                            <img src="{{ doctor_additional_info.profile_image.url }}" alt="Profile Image" class="profile-image">
+                        </div>
+                    {% else %}
+                        <div class="profile-image-container">
+                            <div class="profile-placeholder">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <h2 class="profile-name">Dr. {{ doctor_profile.user }}</h2>
+                    <p class="profile-specialization">{{ doctor_profile.specialization }}</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ doctor_profile.experience_years }}+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ doctor_additional_info.hospitals|default:"1" }}</div>
+                            <div class="stat-label">Hospitals</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ doctor_additional_info.qualifications|default:"MD" }}</div>
+                            <div class="stat-label">Qualification</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="profile_image">Profile Image</label>
+                        <div class="file-input-container">
+                            <label for="profile_image" class="file-input-label">
+                                <i class="fas fa-camera"></i>
+                                <span>Choose profile image</span>
+                            </label>
+                            <input type="file" id="profile_image" name="profile_image" class="file-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="specialization">Specialization</label>
+                        <input type="text" id="specialization" name="specialization" class="form-control" 
+                               value="{{ doctor_profile.specialization|default:'' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience">Experience (Years)</label>
+                        <input type="number" id="experience" name="experience" class="form-control" 
+                               value="{{ doctor_profile.experience_years|default:0 }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hospitals">Hospitals Worked</label>
+                        <input type="text" id="hospitals" name="hospitals" class="form-control" 
+                               value="{{ doctor_additional_info.hospitals|default:'' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="qualifications">Qualifications</label>
+                        <input type="text" id="qualifications" name="qualifications" class="form-control" 
+                               value="{{ doctor_additional_info.qualifications|default:'' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bio">Additional Information</label>
+                        <textarea id="bio" name="bio" class="form-control" 
+                                  placeholder="Enter more details about your qualifications, achievements, etc.">{{ doctor_additional_info.bio|default:'' }}</textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Save Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

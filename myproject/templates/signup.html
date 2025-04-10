@@ -1,0 +1,379 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration and Login</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("{% static 'images/blog-4.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-heading {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #283A7D;
+        }
+
+        .toggle-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .toggle-buttons button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #283A7D;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .toggle-buttons button:hover {
+            background-color: #1E2A5A;
+            transform: translateY(-2px);
+        }
+
+        .toggle-buttons button.active {
+            background-color: #1E2A5A;
+        }
+
+        .card-container {
+            width: 100%;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 1.8em;
+            color: #283A7D;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #283A7D;
+            outline: none;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 14px;
+            background: #283A7D;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .form-group button:hover {
+            background: #1E2A5A;
+            transform: translateY(-2px);
+        }
+
+        .login-prompt {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .login-prompt a {
+            color: #283A7D;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-prompt a:hover {
+            color: #1E2A5A;
+            text-decoration: underline;
+        }
+
+        /* File Preview Styles */
+        .file-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-preview p {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #333;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-heading {
+                font-size: 2em;
+            }
+
+            .toggle-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .toggle-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-heading">Registration</div>
+
+        <!-- Toggle Buttons for User and Doctor Registration -->
+        <div class="toggle-buttons">
+            <button id="userBtn" class="active">User Registration</button>
+            <button id="doctorBtn">Doctor Registration</button>
+        </div>
+
+        <!-- Cards for User and Doctor Registration -->
+        <div class="card-container">
+            <!-- User Registration Card -->
+            <div id="userCard" class="card active">
+                <h3>User Registration</h3>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Full Name</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your name" required
+                        pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed.">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Enter a valid email address.">
+                    </div>
+                    <div class="form-group">
+                        <label for="userpassword">Password</label>
+                        <input type="password" id="userpassword" name="userpassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phonenumber">Phone Number</label>
+                        <input type="text" id="phonenumber" name="phonenumber" placeholder="Enter your phone number" required
+                        pattern="^\+?[0-9\s\-]+$" title="Enter a valid phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="user_type" value="patient">Register</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Doctor Registration Card -->
+            <div id="doctorCard" class="card">
+                <h3>Doctor Registration</h3>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Full Name</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your name" required
+                        pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed.">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required
+                        pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" title="Enter a valid email address.">
+                    </div>
+                    <div class="form-group">
+                        <label for="userpassword">Password</label>
+                        <input type="password" id="userpassword" name="userpassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="doctor_specialization">Specialization</label>
+                        <select id="doctor_specialization" name="doctor_specialization" required>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="General Practice">General Practice</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience_years">Experience Years</label>
+                        <input type="number" id="experience_years" name="experience_years" placeholder="Enter years of experience" required
+                        min="0" max="50" title="Please enter a valid number of years.">
+                    </div>
+                    <div class="form-group">
+                        <label for="license_number">License Number</label>
+                        <input type="text" id="license_number" name="license_number" placeholder="Enter your license number" required
+                        pattern="^\+?[0-9\s\-]+$" title="License number must enter clearly">
+                    </div>
+                    <div class="form-group">
+                        <label for="certificate">Upload License Certificate</label>
+                        <input type="file" id="certificate" name="certificate" accept=".pdf,.jpg,.jpeg,.png" required onchange="previewFile()">
+                    </div>
+                    <div id="filePreview" class="file-preview"></div>
+                    <div class="form-group">
+                        <label for="hospital">Currently Working Hospital</label>
+                        <input type="text" id="hospital" name="hospital" placeholder="Enter hospital name" required
+                        pattern="[A-Za-z\s]+" title="Invalid.">
+                    </div>
+                    <div class="form-group">
+                        <label for="available_days">Available Days</label>
+                        <input type="text" id="available_days" name="available_days" placeholder="e.g., Monday, Wednesday, Friday" required
+                        pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed.">
+                    </div>
+                    <div class="form-group">
+                        <label for="available_time">Available Times</label>
+                        <input type="time" id="available_time_start" name="available_time_start" required>
+                        <span>to</span>
+                        <input type="time" id="available_time_end" name="available_time_end" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="user_type" value="doctor">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Already Registered Login Prompt -->
+        <div class="login-prompt">
+            <p>Already registered? <a href="{% url 'signin' %}">Login here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between User and Doctor registration forms
+        const userBtn = document.getElementById('userBtn');
+        const doctorBtn = document.getElementById('doctorBtn');
+        const userCard = document.getElementById('userCard');
+        const doctorCard = document.getElementById('doctorCard');
+
+        userBtn.addEventListener('click', () => {
+            userBtn.classList.add('active');
+            doctorBtn.classList.remove('active');
+            userCard.classList.add('active');
+            doctorCard.classList.remove('active');
+        });
+
+        doctorBtn.addEventListener('click', () => {
+            doctorBtn.classList.add('active');
+            userBtn.classList.remove('active');
+            doctorCard.classList.add('active');
+            userCard.classList.remove('active');
+        });
+
+        // Function to preview the file
+        function previewFile() {
+            const fileInput = document.getElementById('certificate');
+            const file = fileInput.files[0];
+            const previewContainer = document.getElementById('filePreview');
+            
+            if (file) {
+                const fileName = file.name;
+                const fileType = file.type;
+                
+                if (fileType.startsWith('image')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        previewContainer.innerHTML = `
+                            <img src="${event.target.result}" alt="File Preview">
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'application/pdf') {
+                    previewContainer.innerHTML = `<p>Selected file: ${fileName}</p>`;
+                } else {
+                    previewContainer.innerHTML = `<p>Selected file: ${fileName}</p>`;
+                }
+            } else {
+                previewContainer.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>

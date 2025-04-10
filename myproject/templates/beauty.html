@@ -1,0 +1,483 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty - Netmeds</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Owl Carousel CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #fff;
+            border-bottom: 2px solid #1d2b60;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .search-bar {
+            flex: 1;
+            margin: 0 20px;
+            display: flex;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #1d2b60;
+            color: #fff;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #32a3c6;
+        }
+
+        .user-actions a {
+            margin-left: 20px;
+            font-weight: bold;
+            color: #1d2b60;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .user-actions a:hover {
+            color: #32a3c6;
+        }
+
+        nav {
+            background-color: #1d2b60;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav li {
+            margin: 0 15px;
+        }
+
+        nav a {
+            color: #fff;
+            font-size: 16px;
+            padding: 10px;
+            display: block;
+            transition: color 0.3s;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: #f8f8f8;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #1d2b60, #32a3c6);
+            color: #fff;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .hero-section h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .hero-section .btn {
+            background-color: #fff;
+            color: #1d2b60;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .hero-section .btn:hover {
+            background-color: #1d2b60;
+            color: #fff;
+        }
+
+        /* Offers Banner */
+        .offers-banner {
+            margin-bottom: 40px;
+        }
+
+        .owl-carousel .item img {
+            width: 100%;
+            border-radius: 10px;
+            transition: transform 0.5s ease;
+        }
+
+        .owl-carousel .item img:hover {
+            transform: scale(1.05);
+        }
+
+        .owl-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .owl-prev,
+        .owl-next {
+            background: rgba(255, 255, 255, 0.7) !important;
+            color: #32a3c6 !important;
+            font-size: 24px !important;
+            padding: 10px 15px !important;
+            border-radius: 50% !important;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .owl-prev:hover,
+        .owl-next:hover {
+            background: rgba(255, 255, 255, 0.9) !important;
+            transform: scale(1.1);
+        }
+
+        /* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .category-card .card-body {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .category-card h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #1d2b60;
+        }
+
+        .category-card p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .category-card .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #1d2b60;
+            color: #fff;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .category-card .btn:hover {
+            background-color: #32a3c6;
+        }
+
+        /* View All Button */
+        .view-all {
+            text-align: right;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .view-all-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #1d2b60;
+            color: #fff;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .view-all-btn:hover {
+            background-color: #32a3c6;
+        }
+
+        .view-all-btn i {
+            margin-left: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="top-bar">
+            <div class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="Netmeds Logo">
+            </div>
+            <div class="search-bar">
+                <form action="{% url 'search_medicine' %}" method="get" class="search-bar">
+                    <input type="text" name="q" placeholder="Search for medicines..." value="{{ query }}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="user-actions">
+                <a href="#">Sign In / Sign Up</a>
+                <a href="#">Cart</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#">Medicine</a></li>
+            <li><a href="#">Wellness</a></li>
+            <li><a href="#">Lab Tests</a></li>
+            <li><a href="#">Beauty</a></li>
+            <li><a href="#">Health Corner</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1>Discover Beauty Essentials</h1>
+            <p>Explore our premium collection of beauty and skincare products.</p>
+            <a href="#" class="btn">Shop Now</a>
+        </div>
+
+        <!-- Offers Banner -->
+        <div class="offers-banner">
+            <div class="owl-carousel owl-theme">
+                <div class="item">
+                    <img src="{% static 'images/beauty1.png' %}" alt="Beauty Banner 1" loading="lazy">
+                </div>
+                <div class="item">
+                    <img src="{% static 'images/beauty8.png' %}" alt="Beauty Banner 2" loading="lazy">
+                </div>
+                <div class="item">
+                    <img src="{% static 'images/beauty3.png' %}" alt="Beauty Banner 3" loading="lazy">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category Grid -->
+        <h2>Shop by Category</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <img src="{% static 'images/skincare.png' %}" alt="Face Care">
+                <div class="card-body">
+                    <h3>Face Care</h3>
+                    <p>Explore a wide range of face care products.</p>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/lipcare.png' %}" alt="Lip Care">
+                <div class="card-body">
+                    <h3>Lip Care</h3>
+                    <p>Discover lip care essentials for soft and smooth lips.</p>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/bodycare.png' %}" alt="Body Care">
+                <div class="card-body">
+                    <h3>Body Care</h3>
+                    <p>Find the best body care products for your skin.</p>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/haircare.png' %}" alt="Hair Care">
+                <div class="card-body">
+                    <h3>Hair Care</h3>
+                    <p>Shop for hair care products to keep your hair healthy.</p>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+        </div>
+        <!-- View All Button -->
+        <div class="view-all">
+            <a href="{% url 'beauty_section' %}" class="view-all-btn">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <!-- Brand Grid -->
+        <h2>SkinCare Essentials</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <img src="{% static 'images/facewash.png' %}" alt="Face Care">
+                <div class="card-body">
+                    <h3>Face Wash</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/sunscreen.png' %}" alt="Lip Care">
+                <div class="card-body">
+                    <h3>SunScreen</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/makeup.png' %}" alt="Body Care">
+                <div class="card-body">
+                    <h3>Make Up</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/facialkit.png' %}" alt="Hair Care">
+                <div class="card-body">
+                    <h3>Facial Kit</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+        </div>
+        <!-- View All Button -->
+        <div class="view-all">
+            <a href="#" class="view-all-btn">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <!-- Hair Grid -->
+        <h2>HairCare Essentials</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <img src="{% static 'images/hairoil.png' %}" alt="hair Care">
+                <div class="card-body">
+                    <h3>Hair Oil</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/hairserum.png' %}" alt="hair Care">
+                <div class="card-body">
+                    <h3>Hair Serum</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/haircream.png' %}" alt="hair Care">
+                <div class="card-body">
+                    <h3>Hair Cream</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+            <div class="category-card">
+                <img src="{% static 'images/haircond.png' %}" alt="Hair Care">
+                <div class="card-body">
+                    <h3>Hair Conditioner</h3>
+                    <a href="#" class="btn">Shop Now</a>
+                </div>
+            </div>
+        </div>
+        <!-- View All Button -->
+        <div class="view-all">
+            <a href="#" class="view-all-btn">View All <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Owl Carousel JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function(){
+            $(".owl-carousel").owlCarousel({
+                items: 1,
+                loop: true,
+                autoplay: true,
+                autoplayTimeout: 3000,
+                autoplayHoverPause: true,
+                nav: true,
+                navText: ["<i class='fas fa-chevron-left'></i>", "<i class='fas fa-chevron-right'></i>"]
+            });
+        });
+    </script>
+</body>
+</html>

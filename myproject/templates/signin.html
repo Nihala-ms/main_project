@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 900px;
+            height: 500px;
+            background: white;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .left-panel img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #283A7D;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        form input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        form button {
+            padding: 12px;
+            background: #283A7D;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        form button:hover {
+            background: #1d2b60;
+        }
+
+        .forgot-password {
+            text-align: right;
+            font-size: 0.9em;
+            color: #283A7D;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .signup-link a {
+            color: #283A7D;
+            text-decoration: none;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0.9;
+            animation: fade-in 0.5s;
+        }
+
+        .toast.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .toast.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 0.9;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel with Logo -->
+        <div class="left-panel">
+            <img src="{% static 'images/logo.png' %}" alt="Logo">
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            {% if messages %}
+                <div class="toast error">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <h3>Welcome Back</h3>
+            <p>Log in to your account to get expert advice from our doctors.</p>
+            <form method="POST" action="{% url 'signin' %}{% if next %}?next={{ next }}{% endif %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <a href="#" class="forgot-password">Forgot password?</a>
+                <button type="submit">Sign in</button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('ul li');
+            messages.forEach(message => {
+                const notification = document.createElement('div');
+                notification.className = `toast error`; // Adjusted to 'error'
+                notification.textContent = message.textContent;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000); // Auto-remove after 3 seconds
+            });
+        });
+    </script>
+</body>
+</html>

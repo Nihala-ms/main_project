@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | {{ doctor_profile.user }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-light: #7a92ff;
+            --primary-dark: #2a4bdb;
+            --accent: #FF5722;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --danger: #F44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            min-height: 100vh;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, var(--accent) 0%, rgba(255, 87, 34, 0.5) 100%);
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            border-bottom: none;
+        }
+
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            border-bottom: none;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 6px 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #e9ecef;
+            margin-bottom: 15px;
+        }
+
+        /* Prescription specific styles */
+        .prescription-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .prescription-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .prescription-content {
+            min-height: 300px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        .signature-area {
+            margin-top: 50px;
+            border-top: 1px dashed #ccc;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                min-width: 80px;
+            }
+            .sidebar-brand, .nav-link span {
+                display: none;
+            }
+            .nav-link {
+                justify-content: center;
+            }
+            .nav-link i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadein {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 px-0 sidebar">
+                <div class="d-flex flex-column h-100">
+                    <div class="sidebar-brand text-center py-4">
+                        {% if doctor_additional_info.profile_image %}
+                        <img src="{{ doctor_additional_info.profile_image.url }}" alt="Profile" class="profile-img img-fluid rounded-circle mb-3">
+                        {% else %}
+                        <div class="profile-img rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-user-md text-primary fs-3"></i>
+                        </div>
+                        {% endif %}
+                        <h5 class="mb-1">Dr. {{ doctor_profile.user }}</h5>
+                        <small class="text-muted">{{ doctor_profile.specialization }}</small>
+                    </div>
+                    
+                    <nav class="nav flex-column px-3">
+                        <a class="nav-link active" href="{% url 'doctor_dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            <span>Appointments</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'doctor_profile' %}">
+                            <i class="fas fa-user-cog me-2"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-prescription me-2"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                        <a class="nav-link mt-auto mb-4" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>
+                            <span>Logout</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 col-lg-10 px-md-4 py-4">
+                {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h4 mb-0">Dashboard Overview</h2>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dashboardActions" data-bs-toggle="dropdown">
+                            <i class="fas fa-cog me-1"></i> Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-plus-circle me-2"></i> New Appointment</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i> Notifications</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i> Help</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card animate-fadein">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-2">Today's Appointments</h6>
+                                        <h3 class="mb-0">{{ today_appointments_count }}</h3>
+                                    </div>
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-calendar-day text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card animate-fadein" style="animation-delay: 0.1s;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-2">Upcoming</h6>
+                                        <h3 class="mb-0">{{ upcoming_appointments_count }}</h3>
+                                    </div>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-calendar-check text-success"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card animate-fadein" style="animation-delay: 0.2s;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-2">Pending Prescriptions</h6>
+                                        <h3 class="mb-0">{{ pending_prescriptions_count }}</h3>
+                                    </div>
+                                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                        <i class="fas fa-file-prescription text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="card mb-4 animate-fadein">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Upcoming Appointments</h5>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-primary">Today</button>
+                            <button class="btn btn-sm btn-outline-primary">Week</button>
+                            <button class="btn btn-sm btn-outline-primary">Month</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if upcoming_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th>Prescription</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in upcoming_appointments %}
+                                    <tr class="{% if appointment.completed %}table-success{% elif appointment.prescription_text %}table-info{% endif %}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-user text-muted"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">{{ appointment.patient.user }}</h6>
+                                                    <small class="text-muted">{{ appointment.patient.user.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ appointment.date|date:"M d, Y" }}<br>
+                                            <small class="text-muted">{{ appointment.time_slot|time:"h:i A" }}</small>
+                                        </td>
+                                        <td>
+                                            {% if appointment.completed %}
+                                            <span class="badge bg-success rounded-pill">
+                                                <i class="fas fa-check-circle me-1"></i> Completed
+                                            </span>
+                                            {% elif appointment.prescription_text %}
+                                            <span class="badge bg-info rounded-pill">
+                                                <i class="fas fa-file-prescription me-1"></i> Prescribed
+                                            </span>
+                                            {% else %}
+                                            <span class="badge bg-warning rounded-pill">
+                                                <i class="fas fa-clock me-1"></i> Pending
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if appointment.prescription_text %}
+                                            <a href="{% url 'view_prescription' appointment.id %}" 
+                                               class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </a>
+                                            {% else %}
+                                            <a href="{% url 'write_prescription' appointment.id %}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-file-prescription me-1"></i> Create
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                {% if not appointment.completed %}
+                                                <form method="POST" action="{% url 'doctor_dashboard' %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                                    <button type="submit" name="complete_appointment" 
+                                                            class="btn btn-sm btn-success">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                                
+                                                {% if appointment.video_link %}
+                                                <a href="{{ appointment.video_link }}" target="_blank" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-video"></i>
+                                                </a>
+                                                {% else %}
+                                                <button class="btn btn-sm btn-outline-primary" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#videoLinkModal{{ appointment.id }}">
+                                                    <i class="fas fa-video"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <h5>No Upcoming Appointments</h5>
+                            <p class="text-muted">You don't have any appointments scheduled yet.</p>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Schedule Appointment
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Past Appointments -->
+                <div class="card animate-fadein" style="animation-delay: 0.2s;">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Consultations</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if past_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Prescription</th>
+                                        <th>Follow-up</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in past_appointments %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-user text-muted"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">{{ appointment.patient.user.get_full_name }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{ appointment.date|date:"M d, Y" }}<br>
+                                            <small class="text-muted">{{ appointment.time_slot|time:"h:i A" }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill 
+                                                {% if appointment.completed %}bg-success
+                                                {% else %}bg-danger{% endif %}">
+                                                {% if appointment.completed %}Completed{% else %}Missed{% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if appointment.prescription_text %}
+                                            <a href="{% url 'view_prescription' appointment.id %}" 
+                                               class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">None</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-calendar-plus me-1"></i> Schedule
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <h5>No Past Consultations</h5>
+                            <p class="text-muted">Your consultation history will appear here.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Video Link Modals -->
+    {% for appointment in upcoming_appointments %}
+    <div class="modal fade video-link-modal" id="videoLinkModal{{ appointment.id }}" tabindex="-1" aria-labelledby="videoLinkModalLabel{{ appointment.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoLinkModalLabel{{ appointment.id }}">
+                        <i class="fas fa-video me-2"></i> Set Video Consultation Link
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{% url 'doctor_dashboard' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Patient Information</label>
+                            <div class="appointment-info-box">
+                                <p class="mb-1"><strong>Name:</strong> {{ appointment.patient.user.get_full_name }}</p>
+                                <p class="mb-0"><strong>Email:</strong> {{ appointment.patient.user.email }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Appointment Details</label>
+                            <div class="appointment-info-box">
+                                <p class="mb-1"><strong>Date:</strong> {{ appointment.date|date:"F j, Y" }}</p>
+                                <p class="mb-0"><strong>Time:</strong> {{ appointment.time_slot|time:"h:i A" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="videoLinkInput{{ appointment.id }}" class="form-label fw-bold">Video Consultation URL *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-link"></i></span>
+                                <input type="url" class="form-control video-link-input" id="videoLinkInput{{ appointment.id }}" 
+                                       name="video_link" placeholder="https://meet.google.com/abc-xyz" 
+                                       pattern="https?://.+" required>
+                            </div>
+                            <div class="video-link-help">
+                                Supported platforms: Google Meet, Zoom, Microsoft Teams, etc. (must start with http:// or https://)
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i> Send Link to Patient
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function logout() {
+            window.location.href = "{% url 'logout' %}";
+        }
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // URL validation for video links
+            const videoLinkForms = document.querySelectorAll('.video-link-modal form');
+            videoLinkForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const urlInput = this.querySelector('input[type="url"]');
+                    if (urlInput && !urlInput.value.match(/^https?:\/\//)) {
+                        e.preventDefault();
+                        alert('Please enter a valid URL starting with http:// or https://');
+                        urlInput.focus();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

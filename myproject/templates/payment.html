@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f72585;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .payment-container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .payment-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .payment-details {
+            background: #f0f8ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .fee-amount {
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-align: center;
+            margin: 1.5rem 0;
+            font-weight: 700;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .secure-payment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        @media (max-width: 576px) {
+            .payment-container {
+                padding: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h2><i class="fas fa-credit-card"></i> Payment Confirmation</h2>
+        
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">Doctor:</span>
+                <span class="detail-value">Dr. {{ appointment.doctor.user }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Specialization:</span>
+                <span class="detail-value">{{ appointment.doctor.specialization }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ appointment.date }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Time Slot:</span>
+                <span class="detail-value">{{ appointment.time_slot }}</span>
+            </div>
+        </div>
+        
+        <div class="fee-amount">Rs:{{ fixed_fee }}</div>
+        
+        <button id="rzp-button">
+            <i class="fas fa-lock"></i> Pay Securely
+        </button>
+        
+        <div class="secure-payment">
+            <i class="fas fa-shield-alt"></i> 100% Secure Payment
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('rzp-button').onclick = function(e) {
+            // Initialize Razorpay payment
+            const options = {
+                "key": "{{ RAZORPAY_KEY_ID }}", // Replace with your Razorpay Key ID
+                "amount": "{{ fixed_fee|floatformat:2 }}00", // Amount in paise (200.00 becomes 20000)
+                "currency": "INR",
+                "name": "Healthcare Services",
+                "description": "Appointment with Dr. {{ appointment.doctor.user }}",
+                "image": "https://example.com/your_logo.jpg", // Your company logo
+                "order_id": "{{ razorpay_order_id }}", // Order ID generated in your backend
+                "handler": function(response) {
+                    // Handle successful payment
+                    window.location.href = "{% url 'payment_success' appointment.id %}";
+                },
+                "prefill": {
+                    "name": "{{ patient.user.get_full_name }}",
+                    "email": "{{ patient.user.email }}",
+                    "contact": "{{ patient.phone_number }}"
+                },
+                "theme": {
+                    "color": "#4361ee"
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
+            
+            rzp.on('payment.failed', function(response) {
+                // Handle failed payment
+                window.location.href = "{% url 'payment_failed' appointment.id %}";
+            });
+            
+            e.preventDefault();
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

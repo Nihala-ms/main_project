@@ -1,0 +1,1154 @@
+{% load static %}
+{% load mathfilters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Your Pharmacy</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/medicine.css' %}">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .search-bar {
+            flex: 1;
+            margin: 0 20px;
+            display: flex;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #1d2b60;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: rgb(20, 52, 168);
+        }
+
+        .user-actions a {
+            margin-left: 20px;
+            font-weight: 500;
+            color: #1d2b60;
+            transition: color 0.3s;
+        }
+
+        .user-actions a:hover {
+            color: rgb(20, 52, 168);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #1d2b60;
+            padding: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav li {
+            margin: 0 15px;
+        }
+
+        nav a {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #f0f0f0;
+        }
+
+        /* Cart Page Styles */
+        .cart-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-header {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item img {
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
+            margin-right: 25px;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-details h3 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .cart-item-details p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .prescription-required {
+            color: #e74c3c;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prescription-required i {
+            font-size: 16px;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 15px;
+        }
+
+        .btn-quantity {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background-color: #32a3c6;
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-quantity:hover {
+            background-color: #2a8fb0;
+            transform: scale(1.1);
+        }
+
+        .btn-quantity:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quantity-display {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .btn-remove {
+            padding: 8px 15px;
+            border: none;
+            background-color: #e74c3c;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .btn-upload-prescription {
+            padding: 8px 15px;
+            border: none;
+            background-color: #27ae60;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .btn-upload-prescription:hover {
+            background-color: #219653;
+            transform: scale(1.05);
+        }
+
+        .prescription-status {
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .prescription-uploaded {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .prescription-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .cart-summary {
+            margin-top: 40px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-summary h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .cart-summary p {
+            font-size: 16px;
+            color: #555;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .btn-checkout {
+            padding: 15px 30px;
+            border: none;
+            background-color: #32a3c6;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .btn-checkout:hover {
+            background-color: #2a8fb0;
+            transform: scale(1.05);
+        }
+
+        .btn-checkout:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            animation: modalopen 0.3s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 22px;
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .prescription-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn-submit-prescription {
+            padding: 12px;
+            background-color: #32a3c6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit-prescription:hover {
+            background-color: #2a8fb0;
+        }
+
+        .prescription-preview {
+            margin-top: 15px;
+            max-width: 100%;
+            max-height: 200px;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .cart-item img {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .cart-item-actions {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .quantity-controls {
+                margin-right: 0;
+            }
+
+            .btn-remove, .btn-upload-prescription {
+                flex-grow: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background-color: #fff;
+            padding: 20px;
+            border-top: 1px solid #ccc;
+            margin-top: 40px;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 10px;
+            color: #32a3c6;
+            font-size: 1.25rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-column li {
+            margin-bottom: 5px;
+        }
+
+        .footer-column a {
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .footer-column a:hover {
+            color: #32a3c6;
+        }
+
+        .social-media {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .social-media a {
+            margin: 0 10px;
+            color: #32a3c6;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-media a:hover {
+            color: #2a8da8;
+        }
+        
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #1d2b60;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 150px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            right: 0;
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 15px;
+            display: block;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .empty-cart-message {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            padding: 40px 0;
+        }
+        
+        /* Messages */
+        .messages {
+            margin: 20px 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .cart-count {
+            background-color: #32a3c6;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 2px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="top-bar">
+            <div class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="Pharmacy Logo">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for medicines and health products">
+                <button>Search</button>
+            </div>
+            <div class="user-actions">
+                    <div class="profile-dropdown">
+                        <button class="profile-btn">
+                            <i class="fas fa-user-circle"></i> {{ user.name }}
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="">View order History</a>
+                            <a href="{% url 'logout' %}">Logout</a>
+                        </div>
+                    </div>
+                
+                <a href="{% url 'view_cart' %}">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    {% if total_items > 0 %}
+                    <span class="cart-count">{{ total_items }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#">Medicine</a></li>
+            <li><a href="#">Wellness</a></li>
+            <li><a href="#">Lab Tests</a></li>
+            <li><a href="#">Beauty</a></li>
+            <li><a href="#">Health Corner</a></li>
+        </ul>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Cart Content -->
+    <div class="cart-container">
+        <div class="cart-header">Your Cart</div>
+        <div class="cart-items">
+            {% for item in cart_items %}
+            <div class="cart-item" id="cart-item-{{ item.id }}">
+                {% if item.medicine %}
+                    <img src="{{ item.medicine.image.url }}" alt="{{ item.medicine.name }}">
+                    <div class="cart-item-details">
+                        <h3>{{ item.medicine.name }}</h3>
+                        <p>Brand: {{ item.medicine.brand.name }}</p>
+                        <p>Price: ₹<span class="item-price">{{ item.medicine.price|mul:item.quantity }}</span></p>
+                        <p>Quantity: <span class="quantity-value">{{ item.quantity }}</span></p>
+                        {% if item.medicine.prescription_required %}
+                            <p class="prescription-required">
+                                <i class="fas fa-exclamation-circle"></i> Prescription required
+                                {% if item.prescription %}
+                                    <span class="prescription-status prescription-uploaded">
+                                        <i class="fas fa-check-circle"></i> Uploaded
+                                    </span>
+                                {% else %}
+                                    <span class="prescription-status prescription-pending">
+                                        <i class="fas fa-exclamation-triangle"></i> Pending
+                                    </span>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% elif item.product %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    <div class="cart-item-details">
+                        <h3>{{ item.product.name }}</h3>
+                        <p>Price: ₹<span class="item-price">{{ item.product.discount_price|mul:item.quantity }}</span></p>
+                        <p>Quantity: <span class="quantity-value">{{ item.quantity }}</span></p>
+                    </div>
+                {% endif %}
+                <div class="cart-item-actions">
+                    <div class="quantity-controls">
+                        <button class="btn-quantity btn-decrease" data-item-id="{{ item.id }}" data-action="decrease">-</button>
+                        <span class="quantity-display">{{ item.quantity }}</span>
+                        <button class="btn-quantity btn-increase" data-item-id="{{ item.id }}" data-action="increase">+</button>
+                    </div>
+                    <button class="btn-remove" data-item-id="{{ item.id }}">
+                        <i class="fas fa-trash-alt"></i> Remove
+                    </button>
+                    {% if item.medicine and item.medicine.prescription_required %}
+                        <button class="btn-upload-prescription" data-item-id="{{ item.id }}">
+                            <i class="fas fa-upload"></i> {% if item.prescription %}Change{% else %}Upload{% endif %} Prescription
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="empty-cart-message">Your cart is empty</p>
+            {% endfor %}
+        </div>
+
+        {% if cart_items %}
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <h2>Order Summary</h2>
+            <p>Total Items: <span class="total-items">{{ total_items }}</span></p>
+            <p>Total Price: ₹<span class="total-price">{{ total_price }}</span></p>
+            <button class="btn-checkout" id="btn-checkout" {% if requires_prescription_upload %}disabled{% endif %}>
+                Proceed to Checkout
+            </button>
+            {% if requires_prescription_upload %}
+                <p style="color: #e74c3c; text-align: center; margin-top: 10px;">
+                    <i class="fas fa-exclamation-circle"></i> Please upload prescriptions for all prescription-required medicines before checkout.
+                </p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Prescription Upload Modal -->
+    <div id="prescriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Prescription</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="prescriptionForm" class="prescription-form" enctype="multipart/form-data">
+                <input type="hidden" id="modalItemId" name="item_id">
+                <div class="form-group">
+                    <label for="prescriptionFile">Select Prescription File (Image/PDF)</label>
+                    <input type="file" id="prescriptionFile" name="prescription" accept="image/*,.pdf" required>
+                </div>
+                <img id="prescriptionPreview" class="prescription-preview" alt="Prescription preview">
+                <button type="submit" class="btn-submit-prescription" id="btn-submit-prescription">
+                    <span id="submit-text">Upload Prescription</span>
+                    <span id="submit-spinner" class="spinner" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Help</h4>
+                <ul>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="social-media">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Your Pharmacy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Function to get CSRF token from cookies
+        function getCSRFToken() {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === ('csrftoken=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        // Show alert message
+        function showAlert(type, message) {
+            const messagesDiv = document.querySelector('.messages') || document.createElement('div');
+            messagesDiv.className = 'messages';
+            document.querySelector('.cart-container').prepend(messagesDiv);
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            messagesDiv.prepend(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+                if (messagesDiv.children.length === 0) {
+                    messagesDiv.remove();
+                }
+            }, 5000);
+        }
+    
+        // Update quantity function
+        async function updateQuantity(itemId, action) {
+            const btn = document.querySelector(`[data-item-id="${itemId}"][data-action="${action}"]`);
+            if (!btn) return;
+            
+            try {
+                btn.disabled = true;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner"></span>';
+                
+                const response = await fetch(`/pharmacy/update_cart/${itemId}/${action}/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken(),
+                    },
+                });
+    
+                const data = await response.json();
+                
+                if (data.login_required) {
+                    window.location.href = `/pharmacy/pharmacy_auth/?next=${window.location.pathname}`;
+                    return;
+                }
+    
+                if (!data.success) {
+                    throw new Error(data.error || "Failed to update quantity");
+                }
+    
+                // Update the UI
+                const itemElement = document.querySelector(`#cart-item-${itemId}`);
+                if (itemElement) {
+                    const quantityDisplay = itemElement.querySelector('.quantity-display');
+                    const quantityValue = itemElement.querySelector('.quantity-value');
+                    const priceElement = itemElement.querySelector('.item-price');
+                    
+                    if (quantityDisplay) quantityDisplay.textContent = data.quantity;
+                    if (quantityValue) quantityValue.textContent = data.quantity;
+                    if (priceElement) priceElement.textContent = data.item_price;
+                    
+                    // If quantity is 0, remove the item
+                    if (data.quantity <= 0) {
+                        itemElement.remove();
+                    }
+                }
+    
+                // Update totals
+                const totalPriceElement = document.querySelector('.total-price');
+                const totalItemsElement = document.querySelector('.total-items');
+                const checkoutBtn = document.getElementById('btn-checkout');
+                
+                if (totalPriceElement) totalPriceElement.textContent = data.total_price;
+                if (totalItemsElement) totalItemsElement.textContent = data.total_items;
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = data.requires_prescription_upload;
+                }
+                
+                // Show empty cart message if needed
+                if (data.is_empty) {
+                    document.querySelector('.cart-items').innerHTML = 
+                        '<p class="empty-cart-message">Your cart is empty</p>';
+                    document.querySelector('.cart-summary').style.display = 'none';
+                }
+                
+                showAlert('success', 'Cart updated successfully');
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showAlert('error', error.message || "An error occurred");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+    
+        // Remove item function
+        async function removeItem(itemId) {
+            if (!confirm("Are you sure you want to remove this item from your cart?")) {
+                return;
+            }
+            
+            const btn = document.querySelector(`[data-item-id="${itemId}"].btn-remove`);
+            if (!btn) return;
+            
+            try {
+                btn.disabled = true;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner"></span>';
+                
+                const response = await fetch(`/pharmacy/remove_from_cart/${itemId}/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken(),
+                    },
+                });
+    
+                const data = await response.json();
+                
+                if (data.login_required) {
+                    window.location.href = `/pharmacy/pharmacy_auth/?next=${window.location.pathname}`;
+                    return;
+                }
+    
+                if (!data.success) {
+                    throw new Error(data.error || "Failed to remove item");
+                }
+    
+                // Remove the item from UI
+                const itemElement = document.querySelector(`#cart-item-${itemId}`);
+                if (itemElement) {
+                    itemElement.remove();
+                }
+    
+                // Update totals
+                const totalPriceElement = document.querySelector('.total-price');
+                const totalItemsElement = document.querySelector('.total-items');
+                const checkoutBtn = document.getElementById('btn-checkout');
+                
+                if (totalPriceElement) totalPriceElement.textContent = data.total_price;
+                if (totalItemsElement) totalItemsElement.textContent = data.total_items;
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = data.requires_prescription_upload;
+                }
+    
+                // Show message if cart is empty
+                if (data.is_empty) {
+                    document.querySelector('.cart-items').innerHTML = 
+                        '<p class="empty-cart-message">Your cart is empty</p>';
+                    document.querySelector('.cart-summary').style.display = 'none';
+                }
+                
+                showAlert('success', 'Item removed from cart');
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showAlert('error', error.message || "An error occurred");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        }
+    
+        // Upload prescription function
+        async function uploadPrescription(itemId) {
+            const modal = document.getElementById('prescriptionModal');
+            const form = document.getElementById('prescriptionForm');
+            const submitBtn = document.getElementById('btn-submit-prescription');
+            const submitText = document.getElementById('submit-text');
+            const submitSpinner = document.getElementById('submit-spinner');
+            const fileInput = document.getElementById('prescriptionFile');
+            const preview = document.getElementById('prescriptionPreview');
+            
+            // Set the item ID in the form
+            document.getElementById('modalItemId').value = itemId;
+            
+            // Show the modal
+            modal.style.display = 'block';
+            
+            // Close modal when clicking X
+            document.querySelector('.close-modal').onclick = function() {
+                modal.style.display = 'none';
+                form.reset();
+                preview.style.display = 'none';
+            }
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    form.reset();
+                    preview.style.display = 'none';
+                }
+            }
+            
+            // Preview image when file is selected
+            fileInput.onchange = function(e) {
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    if (file.type.match('image.*')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                }
+            }
+            
+            // Handle form submission
+            form.onsubmit = async function(e) {
+                e.preventDefault();
+                
+                try {
+                    submitBtn.disabled = true;
+                    submitText.style.display = 'none';
+                    submitSpinner.style.display = 'inline-block';
+                    
+                    const formData = new FormData(form);
+                    
+                    const response = await fetch('/pharmacy/upload_prescription/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.login_required) {
+                        window.location.href = `/pharmacy/pharmacy_auth/?next=${window.location.pathname}`;
+                        return;
+                    }
+                    
+                    if (!data.success) {
+                        throw new Error(data.error || "Failed to upload prescription");
+                    }
+                    
+                    // Update the UI
+                    const itemElement = document.querySelector(`#cart-item-${itemId}`);
+                    if (itemElement) {
+                        const uploadBtn = itemElement.querySelector('.btn-upload-prescription');
+                        const statusBadge = itemElement.querySelector('.prescription-status');
+                        
+                        if (uploadBtn) {
+                            uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Change Prescription';
+                        }
+                        
+                        if (statusBadge) {
+                            statusBadge.className = 'prescription-status prescription-uploaded';
+                            statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Uploaded';
+                        }
+                    }
+                    
+                    // Enable checkout if all prescriptions are uploaded
+                    const checkoutBtn = document.getElementById('btn-checkout');
+                    if (checkoutBtn && data.all_prescriptions_uploaded) {
+                        checkoutBtn.disabled = false;
+                    }
+                    
+                    // Close the modal
+                    modal.style.display = 'none';
+                    form.reset();
+                    preview.style.display = 'none';
+                    
+                    showAlert('success', 'Prescription uploaded successfully');
+                    
+                } catch (error) {
+                    console.error("Error:", error);
+                    showAlert('error', error.message || "Failed to upload prescription");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitText.style.display = 'inline';
+                    submitSpinner.style.display = 'none';
+                }
+            }
+        }
+    
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quantity buttons
+            document.querySelectorAll('.btn-quantity').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-item-id');
+                    const action = this.getAttribute('data-action');
+                    updateQuantity(itemId, action);
+                });
+            });
+            
+            // Remove buttons
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-item-id');
+                    removeItem(itemId);
+                });
+            });
+            
+            // Prescription upload buttons
+            document.querySelectorAll('.btn-upload-prescription').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-item-id');
+                    uploadPrescription(itemId);
+                });
+            });
+            
+            // Checkout button
+            const checkoutBtn = document.getElementById('btn-checkout');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function() {
+                    window.location.href = "{% url 'checkout' %}";
+                });
+            }
+        });
+    </script></body>
+</html>

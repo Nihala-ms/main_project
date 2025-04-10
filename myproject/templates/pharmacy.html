@@ -1,0 +1,1168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta and Links -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCare+ - Your Trusted Online Pharmacy</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- JS Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #00acc1;
+            --accent-color: #ff4081;
+            --light-color: #f5f7fa;
+            --dark-color: #263238;
+            --success-color: #4CAF50;
+            --discount-color: #e53935;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #0d1a6b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            display: inline-block;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo img {
+            height: 55px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover img {
+            transform: scale(1.1);
+        }
+
+        .search-bar {
+            flex: 1;
+            margin: 0 30px;
+            position: relative;
+            max-width: 600px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: #f5f7fa;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 172, 193, 0.2);
+            background-color: white;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 6px;
+            top: 6px;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .search-bar button:hover {
+            background: linear-gradient(135deg, #0d1a6b, #0097a7);
+            transform: translateY(-2px);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .user-actions a {
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 8px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-actions a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .user-actions a:hover::after {
+            width: 100%;
+        }
+
+        .cart-icon {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -12px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(135deg, var(--primary-color), #3949ab);
+            padding: 12px 0;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav li {
+            margin: 0 12px;
+        }
+
+        nav a {
+            color: white;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background-color: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Hero Carousel */
+        .hero-carousel {
+            margin: 25px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .hero-carousel .item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 450px;
+            object-fit: cover;
+        }
+
+        .owl-nav button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9) !important;
+            width: 50px;
+            height: 50px;
+            border-radius: 50% !important;
+            color: var(--primary-color) !important;
+            font-size: 24px !important;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .owl-nav button:hover {
+            background: white !important;
+            color: var(--accent-color) !important;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .owl-prev {
+            left: 25px;
+        }
+
+        .owl-next {
+            right: 25px;
+        }
+
+        /* Quick Categories */
+        .quick-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.1);
+            color: var(--accent-color);
+        }
+
+        .category-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .category-card p {
+            color: var(--secondary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Featured Products */
+        .featured-products {
+            margin: 60px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .view-all {
+            color: var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            color: var(--accent-color);
+            transform: translateX(5px);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+            background: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .product-image img {
+            width: auto;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+            max-width: 100%;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--discount-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-title {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .product-manufacturer {
+            color: #78909c;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #90a4ae;
+            font-size: 1rem;
+        }
+
+        .discount-percent {
+            color: var(--discount-color);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(229, 57, 53, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-to-cart:hover {
+            background: linear-gradient(135deg, #0d1a6b, #0097a7);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Beauty Section */
+        .beauty-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 100%);
+            padding: 60px 0;
+            margin: 60px 0;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beauty-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: url('{% static "images/beauty-pattern.png" %}') no-repeat;
+            opacity: 0.1;
+        }
+
+        .beauty-categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .beauty-category {
+            background: white;
+            width: 180px;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .beauty-category:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .beauty-category img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .beauty-category:hover img {
+            transform: scale(1.1);
+        }
+
+        .beauty-category h3 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Health Info Banner */
+        .health-banner {
+            background: linear-gradient(135deg, var(--primary-color), #3949ab);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 60px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-banner::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .banner-content {
+            flex: 1;
+            min-width: 300px;
+            z-index: 1;
+        }
+
+        .banner-content h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .banner-content p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            max-width: 500px;
+        }
+
+        .banner-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .banner-image img {
+            max-width: 100%;
+            height: auto;
+            max-height: 250px;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            margin: 60px 0;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #546e7a;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .author-info h4 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .author-info p {
+            color: #78909c;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary-color), #0d1a6b);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h4 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .footer-column h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #cfd8dc;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-column a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-column i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .social-media {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin: 0 10px;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        .social-icon:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #b0bec5;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .health-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .banner-content {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            
+            .banner-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                padding: 20px 15px;
+                gap: 20px;
+            }
+
+            .logo {
+                margin-bottom: 0;
+            }
+
+            .search-bar {
+                width: 100%;
+                margin: 15px 0;
+            }
+
+            .user-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            nav ul {
+                gap: 8px;
+                padding: 0 15px;
+            }
+
+            nav li {
+                margin: 0;
+            }
+
+            nav a {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .quick-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .beauty-category {
+                width: 160px;
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-categories {
+                grid-template-columns: 1fr;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .beauty-category {
+                width: 140px;
+                padding: 15px;
+            }
+
+            .health-banner {
+                padding: 30px 20px;
+            }
+
+            .banner-content h2 {
+                font-size: 1.6rem;
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="top-bar">
+                <div class="logo">
+                    <a href="{% url 'index' %}">
+                        <img src="{% static 'images/logo.png' %}" alt="PharmaCare+ Logo">
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <form action="{% url 'search_medicine' %}" method="get">
+                        <input type="text" name="q" placeholder="Search for medicines, wellness products..." value="{{ query }}">
+                        <button type="submit"><i class="fas fa-search"></i> Search</button>
+                    </form>
+                </div>
+                <div class="user-actions">
+                    <a href="{% url 'pharmacy_auth' %}"><i class="fas fa-user-circle"></i> Sign In</a>
+                    <a href="{% url 'view_cart' %}" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'index' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'order_medicine' %}"><i class="fas fa-pills"></i> Medicines</a></li>
+                <li><a href=""><i class="fas fa-heartbeat"></i> Wellness</a></li>
+                <li><a href=""><i class="fas fa-spa"></i> Beauty</a></li>
+                <li><a href=""><i class="fas fa-book-medical"></i> Health Corner</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Hero Carousel -->
+        <section class="hero-carousel">
+            <div class="owl-carousel owl-theme">
+                
+                <div class="item">
+                    <img src="{% static 'images/banner2.jpg' %}" alt="Discount Offers">
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Quick Categories -->
+        <section class="quick-categories">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-capsules"></i>
+                </div>
+                <a href="{% url 'order_medicine' %}">
+                    <h3>Order Medicine</h3>
+                    <p>Save Upto 25% off</p>
+                </a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-air-freshener"></i>
+                </div>
+                <a href="{% url 'beauty' %}">
+                    <h3>Beauty Products</h3>
+                    <p>Save Upto 40% off</p>
+                </a>
+            </div>
+            
+        </section>
+
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <div class="section-header">
+                <h2 class="section-title">Trending Products</h2>
+                <a href="{% url 'order_medicine' %}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="product-grid">
+                {% for product in trending_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% if product.discount_price %}
+                        <span class="product-badge">{{ product.discount_percentage }}% OFF</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        <p class="product-manufacturer">By {{ product.brand.name }}</p>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ product.discount_price|default:product.price }}</span>
+                            {% if product.discount_price %}
+                            <span class="original-price">₹{{ product.price }}</span>
+                            <span class="discount-percent">{{ product.discount_percentage }}% off</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'product_detail' product.id %}">
+                            <button class="add-to-cart" data-product-id="{{ product.id }}">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Popular Medicines -->
+        <section class="featured-products">
+            <div class="section-header">
+                <h2 class="section-title">Popular Medicines</h2>
+                <a href="{% url 'order_medicine' %}" class="view-all">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="product-grid">
+                {% for medicine in popular_medicines %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}">
+                        {% if medicine.discount_price %}
+                        <span class="product-badge">{{ medicine.discount_percentage }}% OFF</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">{{ medicine.name }}</h3>
+                        <p class="product-manufacturer">{{ medicine.brand.name }} | {{ medicine.dosage }}</p>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ medicine.discount_price|default:medicine.price }}</span>
+                            {% if medicine.discount_price %}
+                            <span class="original-price">₹{{ medicine.price }}</span>
+                            <span class="discount-percent">{{ medicine.discount_percentage }}% off</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'detailed' medicine.id %}">
+                            <button class="add-to-cart" data-product-id="{{ medicine.id }}">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+
+        <!-- Health Info Banner -->
+        <section class="health-banner">
+            <div class="banner-content">
+                <h2>Your Health is Our Priority</h2>
+                <p>Get expert advice from our pharmacists and healthcare professionals. We're here to help you make informed decisions about your health and wellness.</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">
+                    <i class="fas fa-comment-medical"></i> Consult Now
+                </a>
+            </div>
+            <div class="banner-image">
+                <img src="{% static 'images/doctor.png' %}" alt="Healthcare Professional">
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "PharmaCare+ has been a lifesaver for my family. The medicines are always genuine and delivered on time. Their customer service is exceptional!"
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="{% static 'images/user1.jpg' %}" alt="Rahul Sharma" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Rahul Sharma</h4>
+                            <p>Regular Customer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "I appreciate the detailed product information and the discount offers. The quality of beauty products is amazing and prices are very reasonable."
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="{% static 'images/user2.jpg' %}" alt="Priya Patel" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Priya Patel</h4>
+                            <p>Beauty Products Buyer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "As a senior citizen, I find the home delivery service very convenient. The pharmacists are knowledgeable and always willing to answer my questions."
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="{% static 'images/user3.jpg' %}" alt="Mohan Gupta" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Mohan Gupta</h4>
+                            <p>Senior Citizen</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> About PharmaCare+</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Customer Care</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Careers</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Shopping</h4>
+                    <ul>
+                        <li><a href="{% url 'order_medicine' %}"><i class="fas fa-chevron-right"></i> Browse Products</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Offers & Coupons</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Upload Prescription</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Health Packages</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Need Help</h4>
+                    <ul>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> FAQs</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Shipping Policy</a></li>
+                        <li><a href=""><i class="fas fa-chevron-right"></i> Return Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact Info</h4>
+                    <ul>
+                        <li><a href=""><i class="fas fa-map-marker-alt"></i> 123 Health Street, Mumbai</a></li>
+                        <li><a href=""><i class="fas fa-phone"></i> +91 9876543210</a></li>
+                        <li><a href=""><i class="fas fa-envelope"></i> care@pharmacareplus.com</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-media">
+                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 PharmaCare+. All Rights Reserved. | <a href="" style="color: #b0bec5;">Privacy Policy</a> | <a href="" style="color: #b0bec5;">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Owl Carousel -->
+    <script>
+        $(document).ready(function(){
+            $(".owl-carousel").owlCarousel({
+                items: 1,
+                loop: true,
+                autoplay: true,
+                autoplayTimeout: 5000,
+                autoplayHoverPause: true,
+                nav: true,
+                navText: [
+                    "<i class='fas fa-chevron-left'></i>",
+                    "<i class='fas fa-chevron-right'></i>"
+                ],
+                dots: false,
+                animateOut: 'fadeOut',
+                animateIn: 'fadeIn'
+            });
+        });
+    </script>
+</body>
+</html>

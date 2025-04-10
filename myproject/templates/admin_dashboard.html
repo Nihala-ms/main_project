@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73ff;
+            --secondary-color: #1e1e2f;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --info-color: #36b9cc;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: var(--light-color);
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--secondary-color) 0%, #2b2b3f 100%);
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            padding: 25px 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 0 15px;
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: linear-gradient(90deg, var(--primary-color) 0%, rgba(78, 115, 255, 0.5) 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(78, 115, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .sidebar a.active {
+            transform: none;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 15px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn a {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e04f5f;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .logout-btn a i {
+            margin-right: 8px;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .dashboard-header h1 span {
+            color: var(--primary-color);
+        }
+
+        /* Cards */
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header i {
+            margin-right: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            vertical-align: middle;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover td {
+            background-color: rgba(78, 115, 255, 0.03);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn i {
+            margin-right: 6px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(78, 115, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5df1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(78, 115, 255, 0.4);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-danger:hover {
+            background-color: #e04f5f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(28, 200, 138, 0.3);
+        }
+
+        .btn-success:hover {
+            background-color: #17b67e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(28, 200, 138, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background-color: rgba(246, 194, 62, 0.1);
+            color: var(--warning-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(230, 80, 80, 0.1);
+            color: #e65050;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e3eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(78, 115, 255, 0.2);
+            background-color: #fff;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 200px;
+        }
+
+        /* File Input */
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            background-color: #f8f9fc;
+            border: 2px dashed #c2c7d0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 255, 0.05);
+        }
+
+        .file-input-label i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Images */
+        .img-thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e0e3eb;
+        }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin: 25px 0 15px;
+            color: var(--secondary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--dark-color);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+            
+            .sidebar-header h2, 
+            .sidebar a span {
+                display: none;
+            }
+            
+            .sidebar a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .sidebar a i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+            
+            .main {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                padding: 10px;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                justify-content: space-around;
+                width: 100%;
+            }
+            
+            .sidebar a {
+                margin: 0;
+                padding: 10px;
+            }
+            
+            .logout-btn {
+                display: none;
+            }
+            
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-col {
+                flex: 100%;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Panel</h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#doctors" class="active" onclick="showSection('doctors')">
+                <i class="fas fa-user-md"></i>
+                <span>Doctors</span>
+            </a>
+            <a href="#patients" onclick="showSection('patients')">
+                <i class="fas fa-procedures"></i>
+                <span>Patients</span>
+            </a>
+            <a href="#appointments" onclick="showSection('appointments')">
+                <i class="fas fa-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="#medicines" onclick="showSection('medicines')">
+                <i class="fas fa-pills"></i>
+                <span>Medicines</span>
+            </a>
+            <a href="#products" onclick="showSection('products')">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Products</span>
+            </a>
+            <a href="#orders" onclick="showSection('orders')">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Orders</span>
+            </a>
+        </nav>
+        
+        <div class="logout-btn">
+            <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="dashboard-header">
+            <h1>Admin <span>Dashboard</span></h1>
+        </div>
+
+        <!-- Doctors Section -->
+        <div id="doctors" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-md"></i>
+                    Doctors Management
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Email</th>
+                                    <th>Specialization</th>
+                                    <th>Experience</th>
+                                    <th>Hospital</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doctor in doctors %}
+                                <tr>
+                                    <td>{{ doctor.user }}</td>
+                                    <td>{{ doctor.email }}</td>
+                                    <td>{{ doctor.specialization }}</td>
+                                    <td>{{ doctor.experience_years }} years</td>
+                                    <td>{{ doctor.hospital }}</td>
+                                    <td>
+                                        {% if doctor.approved %}
+                                        <span class="badge badge-success">Approved</span>
+                                        {% else %}
+                                        <span class="badge badge-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'edit_doctor' doctor.id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="{% url 'delete_doctor' doctor.id %}" class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('Are you sure you want to delete this doctor?');">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                            {% if not doctor.approved %}
+                                            <a href="{% url 'approve_doctor' doctor.id %}" class="btn btn-success btn-sm" 
+                                               onclick="return confirm('Are you sure you want to approve this doctor?');">
+                                                <i class="fas fa-check"></i> Approve
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="empty-state">
+                                        <i class="fas fa-user-md"></i>
+                                        <p>No doctors found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients Section -->
+        <div id="patients" class="section hidden">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-procedures"></i>
+                    Patients Management
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Gender</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                <tr>
+                                    <td>{{ patient.user }}</td>
+                                    <td>{{ patient.email }}</td>
+                                    <td>{{ patient.phonenumber }}</td>
+                                    <td>{{ patient.gender }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="#" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <i class="fas fa-procedures"></i>
+                                        <p>No patients found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div id="appointments" class="section hidden">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments Management
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Doctor</th>
+                                    <th>Patient</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td>{{ appointment.doctor.user }}</td>
+                                    <td>{{ appointment.patient.user }}</td>
+                                    <td>{{ appointment.date }}</td>
+                                    <td>{{ appointment.time_slot }}</td>
+                                    <td>
+                                        {% if appointment.payment_status == 'Paid' %}
+                                        <span class="badge badge-success">Paid</span>
+                                        {% else %}
+                                        <span class="badge badge-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <p>No appointments found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medicines Section -->
+        <div id="medicines" class="section hidden">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-pills"></i>
+                    Medicines Management
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'add_medicine' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="section-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h4>Basic Information</h4>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Medicine Name*</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Brand*</label>
+                                    <input type="text" name="brand" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Dosage*</label>
+                                    <input type="text" name="dosage" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Category*</label>
+                                    <input type="text" name="category" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing & Stock -->
+                        <div class="section-header">
+                            <i class="fas fa-tag"></i>
+                            <h4>Pricing & Stock</h4>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Price (₹)*</label>
+                                    <input type="number" step="0.01" name="price" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Stock*</label>
+                                    <input type="number" name="stock" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Expiry Date*</label>
+                                    <input type="date" name="expiry_date" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manufacturer Information -->
+                        <div class="section-header">
+                            <i class="fas fa-industry"></i>
+                            <h4>Manufacturer Information</h4>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Manufacturer Name*</label>
+                                    <input type="text" name="manufacturer" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Manufacturer Address*</label>
+                            <textarea name="manufacturer_address" class="form-control" required>thrissur round, kerala</textarea>
+                        </div>
+                        
+                        <!-- Medicine Details -->
+                        <div class="section-header">
+                            <i class="fas fa-file-medical"></i>
+                            <h4>Medicine Details</h4>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Key Benefits</label>
+                            <textarea name="key_benefits" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">How to Use</label>
+                            <textarea name="how_to_use" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Safety Information</label>
+                            <textarea name="safety_information" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Other Information</label>
+                            <textarea name="other_information" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <!-- Image & Prescription -->
+                        <div class="section-header">
+                            <i class="fas fa-image"></i>
+                            <h4>Image & Prescription</h4>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Medicine Image</label>
+                            <div class="file-input-container">
+                                <label for="medicine-image" class="file-input-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose medicine image</span>
+                                </label>
+                                <input type="file" id="medicine-image" name="image" accept="image/*" class="file-input">
+                            </div>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="prescription-required" name="prescription_required">
+                            <label for="prescription-required">Prescription Required</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Add Medicine
+                        </button>
+                    </form>
+                    
+                    <div class="table-responsive" style="margin-top: 30px;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Image</th>
+                                    <th>Brand</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Expiry</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in medicines %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td>
+                                        {% if medicine.image %}
+                                        <img src="{{ medicine.image.url }}" alt="{{ medicine.name }}" class="img-thumbnail">
+                                        {% else %}
+                                        <span class="text-muted">No image</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ medicine.brand.name }}</td>
+                                    <td>₹{{ medicine.price }}</td>
+                                    <td>{{ medicine.stock }}</td>
+                                    <td>{{ medicine.expiry_date }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'edit_medicine' medicine.id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="{% url 'delete_medicine' medicine.id %}" class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('Are you sure you want to delete this medicine?');">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="empty-state">
+                                        <i class="fas fa-pills"></i>
+                                        <p>No medicines found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Section -->
+<div id="products" class="section hidden">
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-shopping-bag"></i>
+            Products Management
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'add_product' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h4>Basic Information</h4>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Product Name*</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Category*</label>
+                            <input type="text" name="category" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description*</label>
+                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <!-- Pricing -->
+                <div class="section-header">
+                    <i class="fas fa-tag"></i>
+                    <h4>Pricing</h4>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Price (₹)*</label>
+                            <input type="number" step="0.01" name="price" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Discount Price (₹)</label>
+                            <input type="number" step="0.01" name="discount_price" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">Stock*</label>
+                            <input type="number" name="stock" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image -->
+                <div class="section-header">
+                    <i class="fas fa-image"></i>
+                    <h4>Product Image</h4>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Product Image*</label>
+                    <div class="file-input-container">
+                        <label for="product-image" class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose product image</span>
+                        </label>
+                        <input type="file" id="product-image" name="image" accept="image/*" class="file-input" required>
+                    </div>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="is-trending" name="is_trending">
+                    <label for="is-trending">Mark as Trending Product</label>
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add Product
+                </button>
+            </form>
+            
+            <div class="table-responsive" style="margin-top: 30px;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Discount</th>
+                            <th>Stock</th>
+                            <th>Trending</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-thumbnail">
+                                {% else %}
+                                <span class="text-muted">No image</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.category }}</td>
+                            <td>₹{{ product.price }}</td>
+                            <td>
+                                {% if product.discount_price %}
+                                ₹{{ product.discount_price }} ({{ product.discount_percentage }}% off)
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                {% if product.is_trending %}
+                                <i class="fas fa-check text-success"></i>
+                                {% else %}
+                                <i class="fas fa-times text-muted"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('Are you sure you want to delete this product?');">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>No products found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Orders Section -->
+<div id="orders" class="section hidden">
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-shopping-cart"></i>
+            Orders Management
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>
+                                {% if order.user %}
+                                {{ order.user.get_full_name }}
+                                {% else %}
+                                Guest
+                                {% endif %}
+                            </td>
+                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                            <td>{{ order.items.count }}</td>
+                            <td>₹{{ order.total }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'delivered' %}badge-success
+                                    {% elif order.status == 'cancelled' %}badge-danger
+                                    {% else %}badge-warning{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if order.razorpay_payment_id %}
+                                <span class="badge badge-success">Paid</span>
+                                {% else %}
+                                <span class="badge badge-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <div class="dropdown" style="display: inline-block;">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="statusDropdown{{ order.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-cog"></i> Status
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="statusDropdown{{ order.id }}">
+                                            <a class="dropdown-item" href="{% url 'update_order_status' order.id 'processing' %}">Processing</a>
+                                            <a class="dropdown-item" href="{% url 'update_order_status' order.id 'shipped' %}">Shipped</a>
+                                            <a class="dropdown-item" href="{% url 'update_order_status' order.id 'delivered' %}">Delivered</a>
+                                            <a class="dropdown-item" href="{% url 'update_order_status' order.id 'cancelled' %}">Cancel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="fas fa-shopping-cart"></i>
+                                <p>No orders found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // Show the selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Update active link
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.sidebar a[href="#${sectionId}"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
