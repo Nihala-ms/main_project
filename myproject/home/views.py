@@ -194,10 +194,45 @@ def signin(request):
     # Render the sign-in form for GET requests
     return render(request, 'signin.html')
 
-
-
-
 def patient_dashboard(request):
+    # Retrieve the user_id from the session
+    user_id = request.session.get('user_id')
+
+    # Check if the user is logged in
+    if not user_id:
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('signin')  # Redirect to the login page
+
+    try:
+        # Fetch the patient's profile using the user_id
+        patient_profile = PatientsProfiles.objects.get(user_id=user_id)
+    except PatientsProfiles.DoesNotExist:
+        messages.error(request, 'Patient profile not found.')
+        return redirect('signin')  # Redirect to login if profile is missing
+
+    # Fetch appointments for the logged-in patient
+    upcoming_appointments = Appointments.objects.filter(
+        patient=patient_profile, date__gte=date.today()
+    ).order_by('date', 'time_slot')  # Changed from 'time' to 'time_slot'
+
+    past_appointments = Appointments.objects.filter(
+        patient=patient_profile, date__lt=date.today()
+    ).order_by('-date', '-time_slot')  # Changed from 'time' to 'time_slot'
+    for appointment in past_appointments:
+        if appointment.prescription_text or appointment.prescription_file:
+            appointment.status = "Completed"
+        else:
+            appointment.status = "Missed"
+    # Pass the patient profile and appointments to the template
+    context = {
+        'patient_profile': patient_profile,
+        'upcoming_appointments': upcoming_appointments,
+        'past_appointments': past_appointments,
+    }
+    return render(request, 'patient_dashboard.html', context)
+
+
+#def patient_dashboard(request):
     # Retrieve the user_id from the session
     user_id = request.session.get('user_id')
 
@@ -245,8 +280,167 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import os
 import pdfkit
+from django.utils import timezone
+from datetime import datetime, timedelta
+from django.db.models import Q
+import calendar
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.utils import timezone
+from datetime import datetime, time, timedelta
+import calendar
+from .models import DoctorsProfiles, DoctorAdditionalInfo, Appointments
 
 def doctor_dashboard(request):
+    user_id = request.session.get('user_id')
+    
+    if not user_id:
+        messages.error(request, 'You must be logged in to access this page.')
+        return redirect('signin')
+
+    try:
+        doctor_profile = DoctorsProfiles.objects.get(user_id=user_id)
+    except DoctorsProfiles.DoesNotExist:
+        messages.error(request, 'Doctor profile not found.')
+        return redirect('signin')
+    
+    doctor_additional_info = DoctorAdditionalInfo.objects.filter(doctor=doctor_profile).first()
+
+    # Get month filter from request
+    month_filter = request.GET.get('month')
+    if month_filter:
+        try:
+            selected_month = datetime.strptime(month_filter, '%Y-%m').date()
+        except ValueError:
+            selected_month = timezone.now().date()
+            messages.error(request, 'Invalid month format')
+    else:
+        selected_month = timezone.now().date()
+
+    # Calculate month range
+    first_day = selected_month.replace(day=1)
+    last_day = selected_month.replace(day=calendar.monthrange(selected_month.year, selected_month.month)[1])
+
+    # Handle form submissions
+    if request.method == 'POST':
+        # Handle video link submission
+        if 'appointment_id' in request.POST and 'video_link' in request.POST:
+            appointment_id = request.POST.get('appointment_id')
+            video_link = request.POST.get('video_link', '').strip()
+            
+            # Get time components
+            try:
+                hour = int(request.POST.get('video_time_hour', 0))
+                minute = int(request.POST.get('video_time_minute', 0))
+                ampm = request.POST.get('video_time_ampm', 'AM')
+                
+                # Convert to 24-hour format
+                if ampm == 'PM' and hour != 12:
+                    hour += 12
+                elif ampm == 'AM' and hour == 12:
+                    hour = 0
+                    
+                time_slot = time(hour, minute)
+                
+                try:
+                    appointment = Appointments.objects.get(id=appointment_id, doctor=doctor_profile)
+                    
+                    if video_link:
+                        if not (video_link.startswith('http://') or video_link.startswith('https://')):
+                            video_link = 'https://' + video_link
+                        
+                        # Update both time_slot and video_time
+                        appointment.time_slot = time_slot
+                        appointment.video_time = time_slot
+                        appointment.video_link = video_link
+                        appointment.is_video_link_sent = True
+                        appointment.save()
+                        
+                        messages.success(request, "Video consultation scheduled successfully!")
+                    else:
+                        messages.error(request, "Please enter a valid video link")
+                    
+                except Appointments.DoesNotExist:
+                    messages.error(request, "Appointment not found.")
+                except Exception as e:
+                    messages.error(request, f"An error occurred: {str(e)}")
+            
+            except ValueError:
+                messages.error(request, "Invalid time format")
+
+        return redirect('doctor_dashboard')
+
+    # Fetch appointments
+    today = timezone.now().date()
+    
+    # Monthly appointments
+    monthly_appointments = Appointments.objects.filter(
+        doctor=doctor_profile,
+        date__range=[first_day, last_day]
+    ).order_by('date', 'time_slot')
+
+    # Upcoming appointments (next 7 days)
+    upcoming_appointments = Appointments.objects.filter(
+        doctor=doctor_profile,
+        date__gte=today,
+        completed=False
+    ).order_by('date', 'time_slot')[:10]
+
+    # Today's appointments
+    todays_appointments = Appointments.objects.filter(
+        doctor=doctor_profile,
+        date=today,
+        completed=False
+    ).order_by('time_slot')
+
+    active_video_sessions = Appointments.objects.filter(
+        doctor=doctor_profile,
+        date=timezone.now().date(),
+        video_link__isnull=False
+    ).order_by('time_slot')
+
+    # Past appointments (last 30 days)
+    past_appointments = Appointments.objects.filter(
+        doctor=doctor_profile,
+        date__lt=today,
+        date__gte=today - timedelta(days=30)
+    ).order_by('-date', '-time_slot')
+
+    # Calendar data for month view
+    cal = calendar.Calendar()
+    month_days = cal.monthdayscalendar(selected_month.year, selected_month.month)
+    
+    # Prepare calendar data with appointments
+    calendar_data = []
+    for week in month_days:
+        week_data = []
+        for day in week:
+            day_data = {'day': day, 'appointments': []}
+            if day != 0:  # 0 means day belongs to other month
+                day_date = datetime(selected_month.year, selected_month.month, day).date()
+                day_data['appointments'] = monthly_appointments.filter(date=day_date)
+            week_data.append(day_data)
+        calendar_data.append(week_data)
+
+    context = {
+        'doctor_profile': doctor_profile,
+        'doctor_additional_info': doctor_additional_info,
+        'active_video_sessions': active_video_sessions,
+        'upcoming_appointments': upcoming_appointments,
+        'todays_appointments': todays_appointments,
+        'past_appointments': past_appointments,
+        'today_appointments_count': todays_appointments.count(),
+        'upcoming_appointments_count': upcoming_appointments.count(),
+        'video_sessions_count': active_video_sessions.count(),
+        'selected_month': selected_month,
+        'calendar_data': calendar_data,
+        'month_name': selected_month.strftime('%B %Y'),
+        'prev_month': (selected_month - timedelta(days=1)).replace(day=1),
+        'next_month': (selected_month + timedelta(days=31)).replace(day=1),
+    }
+    return render(request, 'doctor_dashboard.html', context)
+#def doctor_dashboard(request):
     user_id = request.session.get('user_id')
     
     if not user_id:
@@ -1145,7 +1339,7 @@ def logout_view(request):
     messages.success(request, "You have been logged out successfully.")  # Optional: Add a logout success message
     return redirect('signin')
 
-def payment_success(request):
+#def payment_success(request):
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
     if request.method == 'POST':

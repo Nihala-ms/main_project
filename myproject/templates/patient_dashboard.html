@@ -447,6 +447,28 @@
                 padding: 8px 12px;
                 font-size: 13px;
             }
+            .status {
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-weight: bold;
+                font-size: 0.9em;
+            }
+            
+            .status.completed {
+                background-color: #28a745;
+                color: white;
+            }
+            
+            .status.missed {
+                background-color: #dc3545;
+                color: white;
+            }
+            
+            .status.pending {
+                background-color: #ffc107;
+                color: black;
+            }
+            
         }
     </style>
 </head>
@@ -502,31 +524,34 @@
             <h3>Upcoming Appointments</h3>
             {% if upcoming_appointments %}
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Token No</th>
-                            <th>Doctor</th>
-                            <th>Specialization</th>
-                            <th>Meet Links</th>
-                            <th>Prescription</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for appointment in upcoming_appointments %}
-                            <tr>
-                                <td>{{ appointment.date }}</td>
-                                <td>{{ appointment.token_number }}</td>
-                                <td>{{ appointment.doctor.user }}</td>
-                                <td>{{ appointment.doctor.specialization }}</td>
-                                <td>
-                                    {% if appointment.video_link %}
-                                        <a href="{{ appointment.video_link }}" target="_blank" class="btn btn-success">
-                                            <i class="fas fa-video"></i> Join Meet
-                                        </a>
-                                    {% else %}
-                                        <span>No Link Available</span>
-                                    {% endif %}
+                    <!-- In the upcoming appointments table -->
+<thead>
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Token No</th>
+        <th>Doctor</th>
+        <th>Specialization</th>
+        <th>Meet Links</th>
+        <th>Prescription</th>
+    </tr>
+</thead>
+<tbody>
+    {% for appointment in upcoming_appointments %}
+    <tr>
+        <td>{{ appointment.date }}</td>
+        <td>{{ appointment.time_slot|time:"h:i A" }}</td>  <!-- Changed to time_slot -->
+        <td>{{ appointment.token_number }}</td>
+        <td>{{ appointment.doctor.user }}</td>
+        <td>{{ appointment.doctor.specialization }}</td>
+        <td>
+            {% if appointment.video_link %}
+            <a href="{{ appointment.video_link }}" target="_blank" class="btn btn-success">
+                <i class="fas fa-video"></i> Join Meet
+            </a>
+            {% else %}
+            <span>No Link Available</span>
+            {% endif %}
                                 </td>
                                 <td>
                                     {% if appointment.prescription_file %}
@@ -561,6 +586,7 @@
                             <th>Date</th>
                             <th>Doctor</th>
                             <th>Specialization</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -569,6 +595,16 @@
                                 <td>{{ appointment.date }}</td>
                                 <td>{{ appointment.doctor.user.username }}</td>
                                 <td>{{ appointment.doctor.specialization }}</td>
+                                <td>
+                                    {% if appointment.status == "Completed" %}
+                                        <span class="status completed">Appointment is completed</span>
+                                    {% elif appointment.status == "Missed" %}
+                                        <span class="status missed">Appointment missed</span>
+                                    {% else %}
+                                        <span class="status pending">Pending</span>
+                                    {% endif %}
+                                </td>                           
+                               
                             </tr>
                         {% endfor %}
                     </tbody>

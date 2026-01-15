@@ -649,6 +649,44 @@ def view_cart(request):
             'user': user
         })
 
+def upload_prescription(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'login_required': True}, status=401)
+    
+    try:
+        item_id = request.POST.get('item_id')
+        prescription_file = request.FILES.get('prescription')
+        
+        if not item_id or not prescription_file:
+            return JsonResponse({'success': False, 'error': 'Missing required fields'}, status=400)
+        
+        cart_item = CartItems.objects.get(id=item_id, cart__user=request.user)
+        
+        # Delete old prescription if exists
+        if cart_item.prescription:
+            cart_item.prescription.delete()
+        
+        # Save new prescription
+        cart_item.prescription = prescription_file
+        cart_item.save()
+        
+        # Check if all prescription requirements are now met
+        all_prescriptions_uploaded = not CartItems.objects.filter(
+            cart=cart_item.cart,
+            medicine__prescription_required=True,
+            prescription__isnull=True
+        ).exists()
+        
+        return JsonResponse({
+            'success': True,
+            'all_prescriptions_uploaded': all_prescriptions_uploaded
+        })
+        
+    except CartItems.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Cart item not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        
 def calculate_cart_totals(cart_items):
     subtotal = Decimal('0.00')
     
@@ -677,6 +715,88 @@ def calculate_cart_totals(cart_items):
 
 
 def upload_prescription(request):
+    # Authentication check
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return JsonResponse({
+            'success': False,
+            'error': 'Please login to upload prescription',
+            'login_required': True
+        }, status=401)
+    
+    try:
+        # Get user and cart
+        user = get_object_or_404(User, id=user_id)
+        cart = Cart.objects.get(user=user)
+        
+        # Validate inputs
+        item_id = request.POST.get('item_id')
+        prescription_file = request.FILES.get('prescription')
+        
+        if not item_id:
+            return JsonResponse({
+                'success': False,
+                'error': 'Item ID is required'
+            }, status=400)
+            
+        if not prescription_file:
+            return JsonResponse({
+                'success': False,
+                'error': 'No prescription file provided'
+            }, status=400)
+        
+        # Validate file type
+        valid_extensions = ['.pdf', '.jpg', '.jpeg', '.png']
+        file_ext = os.path.splitext(prescription_file.name)[1].lower()
+        if file_ext not in valid_extensions:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid file type. Only PDF, JPG, JPEG, PNG allowed'
+            }, status=400)
+            
+        # Validate file size (5MB limit)
+        if prescription_file.size > 5 * 1024 * 1024:
+            return JsonResponse({
+                'success': False,
+                'error': 'File size exceeds 5MB limit'
+            }, status=400)
+
+        # Get cart item
+        cart_item = CartItems.objects.get(id=item_id, cart=cart)
+        
+        # Delete old prescription if exists
+        if cart_item.prescription:
+            cart_item.prescription.delete(save=False)  # Delete file but don't save yet
+            
+        # Save new prescription - let Django's FileField handle storage
+        cart_item.prescription = prescription_file
+        cart_item.save()
+        
+        # Efficient check for all prescription requirements
+        all_uploaded = not CartItems.objects.filter(
+            cart=cart,
+            medicine__prescription_required=True,
+            prescription__isnull=True
+        ).exists()
+        
+        return JsonResponse({
+            'success': True,
+            'prescription_url': cart_item.prescription.url,
+            'all_prescriptions_uploaded': all_uploaded
+        })
+        
+    except CartItems.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Item not found in your cart'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'An error occurred: {str(e)}'
+        }, status=500)
+
+#def upload_prescription(request):
     user_id = request.session.get('user_id')
     if not user_id:
         return JsonResponse({
